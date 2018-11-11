@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.GiftMapper">
+	<select id="findAllGifts" resultType="com.douliao.model.database.Gifts">
+		select * from gifts
+	</select>
+	<select id="selGiftsInfo" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Gifts">
+		select * from gifts where id=#{gifts_id}
+	</select>
+	<update id="updateGolds" parameterType="com.douliao.controller.server.model.RewardParam">
+		update live_app_user_info set user_package=user_package-#{total_gold} where user_id=#{userId} and user_package-#{total_gold}>=0
+	</update>
+	<select id="selGiftsById" parameterType="com.douliao.controller.server.model.RewardParam" resultType="com.douliao.model.database.Live_room_gifts">
+		select * from live_room_gifts where live_room_id=#{live_room_id} and gifts_id=#{gifts_id}
+	</select>
+	<update id="updateGiftsAmount" parameterType="com.douliao.controller.server.model.RewardParam">
+		update live_room_gifts set amount=amount+#{amount},total_gold=total_gold+#{total_gold} where live_room_id=#{live_room_id} and gifts_id=#{gifts_id}
+	</update>
+	<insert id="insLiveRoomGifts" parameterType="com.douliao.controller.server.model.RewardParam">
+		insert into live_room_gifts(live_room_id,user_id,gifts_id,amount,gifts_price,total_gold) values(#{live_room_id},#{userId},#{gifts_id},#{amount},#{gifts_price},#{total_gold})
+	</insert>
+	<update id="addScore" parameterType="com.douliao.controller.server.model.RewardParam">
+		update live_app_user_info set user_score=user_score+#{user_score} where user_id=#{live_user_id}
+	</update>
+	<update id="addRoomGold" parameterType="com.douliao.controller.server.model.RewardParam">
+		update live_room_info set user_reward_score=user_reward_score+#{user_score} where id=#{live_room_id}
+	</update>
+	<select id="selAccountGold" parameterType="com.douliao.controller.server.model.RewardParam" resultType="java.lang.Double">
+		select user_package from live_app_user_info where user_id=#{userId}
+	</select>
+	<select id="seluserInfo" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Live_app_user_info">
+		select * from live_app_user_info where user_id=#{userId}
+	</select>
+	<update id="updateUserGolds" parameterType="com.douliao.model.database.Live_app_user_info">
+		update live_app_user_info set user_package=#{user_package},version=#{version}+1 where user_id=#{user_id} and version=#{version}
+	</update>
+	<select id="selVideoGifts" parameterType="com.douliao.controller.server.model.VideoGiftsParam" resultType="com.douliao.model.database.Video_gifts">
+		select * from video_gifts where user_id=#{userId} and video_id=#{videoId}
+	</select>
+	<insert id="insVideoGifts" parameterType="com.douliao.controller.server.model.VideoGiftsParam">
+		insert into video_gifts(video_id,user_id,gifts_id,amount,gifts_price,total_gold) values(#{videoId},#{userId},#{giftsId},#{amount},#{gifts_price},#{total_gold})
+	</insert>
+	<update id="updateVideoGiftsAmount" parameterType="com.douliao.controller.server.model.VideoGiftsParam">
+		update video_gifts set amount=amount+#{amount},total_gold=total_gold+#{total_gold},gifts_price=#{gifts_price} where user_id=#{userId} and video_id=#{videoId} and gifts_id=#{giftsId}
+	</update>
+	<select id="selUserProfit" parameterType="java.lang.Integer" resultType="java.lang.Double">
+		select c.live_profit from live_app_user lau  left join country c on lau.country_id=c.id where lau.id=#{userId}
+	</select>
+	<update id="updateUserScore" parameterType="com.douliao.model.database.Live_app_user_info">
+		update live_app_user_info set user_score=#{user_score},version=#{version}+1 where user_id=#{user_id} and version=#{version}
+	</update>
+	<update id="countScoreByVideo" parameterType="map">
+		insert into count_user_score (user_id,total_score,video_score) values(#{user_id},#{score},#{score}) on  DUPLICATE key update total_score=total_score+#{score},video_score=video_score+#{score}
+	</update>
+</mapper>

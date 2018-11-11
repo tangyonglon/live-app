@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.ShareMapper">
+	<select id="selByUserId" parameterType="com.douliao.controller.server.model.ShareInfoParam" resultType="com.douliao.model.database.Share_info">
+		select * from share_info where user_id=#{user_id}
+	</select>
+	<select id="selUserInfo" parameterType="com.douliao.controller.server.model.ShareInfoParam" resultType="com.douliao.model.database.Live_app_user_info">
+		select id,user_id,user_package,version from live_app_user_info where user_id=#{user_id}
+	</select>
+	<update id="updateUserInfo" parameterType="com.douliao.model.database.Live_app_user_info">
+		update live_app_user_info set user_package=#{user_package},version=#{user_package}+1 where user_id=#{user_id} and version=#{version}
+	</update>
+	<update id="updateShareInfo" parameterType="com.douliao.model.database.Share_info">
+		update share_info set today_time=#{today_time},count=#{count},version=#{version}+1 where user_id=#{user_id} and version=#{version}
+	</update>
+	<insert id="insShareInfo" parameterType="com.douliao.model.database.Share_info">
+		insert into share_info(user_id,share_way_id,today_time,count,version,status) values(#{user_id},#{share_way_id},#{today_time},#{count},#{version},#{status})
+	</insert>
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.PersonCenterMapper">
+	<select id="selPersonInfo" parameterType="java.lang.Integer" resultType="com.douliao.model.response.PersonCenterModel">
+		select laui.user_id,laui.user_name,laui.user_head,laui.user_sex,laui.user_age,laui.user_package,laui.user_score,laui.user_authentication,v.vmount,w.wmount,uti.live_level,uti.live_price from live_app_user_info laui left join user_tv_info uti on laui.user_id=uti.user_id left join
+(select video_list.user_id,count(video_list.id) vmount from video_list where  video_list.user_id=#{userId} and video_list.status!=4) v on laui.user_id=v.user_id left join
+(select watch_history.user_id,count(watch_history.id) wmount from watch_history where  watch_history.user_id=#{userId} ) w on v.user_id=w.user_id where laui.user_id=#{userId}
+	</select>
+	<select id="selLiveRoom" parameterType="java.lang.Integer" resultType="com.douliao.model.RoomInfo">
+		select live_room_id,im_channel from all_live_room where user_id=#{userId} and status=2
+	</select>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.UserMapper">
+	<select id="findAll" resultType="map">
+		select * from t_user
+	</select>
+	<sql id="userModel">
+		user_phone,user_password,user_id,user_name,user_head,user_age,user_sex,user_package,user_score,user_identity,user_authentication,user_level,user_weight,user_height,make_friends_goal
+	</sql>
+	
+	<select id="login" parameterType="com.douliao.controller.server.model.LoginParam" resultType="com.douliao.model.database.LiveAppUser">
+		select lau.id,lau.phone_code,lau.user_phone,lau.user_account,lau.user_password,lau.status,laui.praise_channel,laui.comment_channel,laui.gift_channel
+		 from live_app_user lau left join live_app_user_info laui on lau.id=laui.user_id 
+		where lau.status=1
+		<if test="userPhone!=null and userPhone!=''">
+			and lau.user_phone=#{userPhone} and lau.phone_code=#{phoneCode}
+		</if>
+		<if test="userAccount!=null and userAccount!=''">
+			and lau.user_account=#{userAccount} and lau.account_type=#{account_type}
+		</if>
+	</select>
+	<update id="loginOut" parameterType="com.douliao.controller.server.model.LoginOutParam">
+		update user_token set status=#{status} where user_id=#{userId} and token=#{token}
+	</update>
+	<select id="selIsOnline" parameterType="com.douliao.controller.server.model.LoginParam" resultType="com.douliao.model.database.UserToken">
+		select * from user_token where user_id=#{userId} and login_mode=#{loginMode} limit 1
+	</select>
+	<update id="updateToken" parameterType="com.douliao.controller.server.model.LoginParam">
+		update user_token set token=#{token},login_time=#{loginTime},mac=#{mac},mac_type=#{macType},phone_type=#{phoneType},login_ip=#{ip},channel_id=#{channel_id},status=#{status} where user_id=#{userId} and login_mode=#{loginMode}
+	</update>
+	<insert id="insToken" parameterType="com.douliao.controller.server.model.LoginParam">
+		insert into user_token(user_id,token,login_time,mac,mac_type,phone_type,login_mode,login_ip,channel_id,status) values(#{userId},#{token},#{loginTime},#{mac},#{macType},#{phoneType},#{loginMode},#{ip},#{channel_id},#{status})
+	</insert>
+	<select id="selTokenByUserId" parameterType="com.douliao.model.database.UserToken" resultType="com.douliao.model.database.UserToken">
+		select * from user_token where user_id=#{user_id} and login_mode=#{login_mode} and status=#{status} limit 1
+	</select>
+	<update id="updateIMChannel" parameterType="com.douliao.controller.server.model.IMChannelParam">
+		update live_app_user_info
+		<set>
+			<if test="praise_channel!=null and praise_channel!=''">
+				praise_channel=#{praise_channel},
+			</if>
+			<if test="comment_channel!=null and comment_channel!=''">
+				comment_channel=#{comment_channel},
+			</if>
+			<if test="gift_channel!=null and gift_channel!=''">
+				gift_channel=#{gift_channel}
+			</if>
+		</set>
+		where user_id=#{userId}
+	</update>
+	<select id="selOrderInfo" parameterType="java.lang.String" resultType="com.douliao.model.UserGold">
+		select o.user_id,o.order_id,o.status,g.id,g.title,g.goods_price from order_info o left join goods g on o.goods_id=g.id where o.order_id=#{order_id} and o.status=2
+	</select>
+	<select id="getUserInfoByUserId" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Live_app_user_info">
+		select id,user_id,user_package,user_score,version from live_app_user_info where user_id=#{user_id}
+	</select>
+	<update id="updateUserPackage" parameterType="com.douliao.model.database.Live_app_user_info">
+		update live_app_user_info set user_package=#{user_package},version=#{version}+1 where user_id=#{user_id} and version=#{version}
+	</update>
+	<select id="selIpList" parameterType="java.lang.String" resultType="map">
+		select id,begin,end from country_ip where begin like #{changeip}"%" and status=1
+	</select>
+	<select id="selUserInfo" parameterType="com.douliao.controller.server.model.LoginParam" resultType="com.douliao.model.database.LiveAppUser">
+		select id,user_account,account_type,status from live_app_user where user_account=#{userAccount} and account_type=#{account_type}
+	</select>
+	<insert id="insUser" parameterType="com.douliao.controller.server.model.LoginParam" useGeneratedKeys="true" keyProperty="id">
+		insert into live_app_user(user_account,account_type,user_create_time,country_id,registerWay,status) 
+		values(#{userAccount},#{account_type},#{create_time},#{country_id},#{registerWay},#{status})
+	</insert>
+	<insert id="insUserInfo" parameterType="com.douliao.controller.server.model.LoginParam">
+		insert into live_app_user_info(user_id,user_name,user_head) value(#{id},#{user_name},#{user_head});
+	</insert>
+	<select id="selUserIdIsHave" parameterType="com.douliao.controller.server.model.LoginParam" resultType="map">
+		select id,user_id from live_app_user_info where user_id=#{id}
+	</select>
+</mapper>

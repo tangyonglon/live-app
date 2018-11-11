@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.ScoreMapper">
+	<select id="selExtractInfo" parameterType="com.douliao.controller.server.model.ExtractParam" resultType="com.douliao.model.ExtractModel">
+		select laui.user_id,laui.user_score,cus.total_score,cus.live_score,cus.video_score 
+		 from live_app_user_info laui left join count_user_score cus on laui.user_id=cus.user_id where laui.user_id=#{userId}
+	</select>
+	<select id="selScoreList" resultType="com.douliao.model.database.Score_money">
+		select * from score_money where status=1
+	</select>
+	<insert id="insBlankAccount" parameterType="com.douliao.controller.server.model.BindBlankParam">
+		insert into user_blank_account(user_id,blank_account,blank_type,country_id,expire_time,csc,create_time,status) values(#{user_id},#{blank_account},#{blank_type},#{country_id},#{expire_time},#{csc},#{create_time},#{status})
+	</insert>
+	<insert id="applyCash" parameterType="com.douliao.controller.server.model.ApplyCashParam">
+		insert into user_apply_cash(user_id,blank_account,blank_type,total_money,create_time,status) values(#{user_id},#{blank_account},#{blank_type},#{total_money},#{create_time},#{status})
+	</insert>
+	<select id="hasBindBlank" parameterType="com.douliao.controller.server.model.CheckBlankParam" resultType="com.douliao.controller.server.model.User_blank_account">
+		select * from user_blank_account where user_id=#{user_id} and blank_type=#{blank_type} and status=#{status}
+	</select>
+	<select id="selBlankAccount" parameterType="com.douliao.controller.server.model.BindBlankParam" resultType="com.douliao.controller.server.model.User_blank_account">
+		select * from user_blank_account where user_id=#{user_id} and blank_type=#{blank_type} limit 1
+	</select>
+	<update id="updateBlankAccount" parameterType="com.douliao.controller.server.model.BindBlankParam">
+		update user_blank_account set blank_account=#{blank_account},country_id=#{country_id},expire_time=#{expire_time},csc=#{csc},create_time=#{create_time},status=#{status} where user_id=#{user_id} and blank_type=#{blank_type}
+	</update>
+	<select id="applyCashHistory" parameterType="com.douliao.controller.server.model.ApplyCashHistoryParam" resultType="com.douliao.model.database.User_apply_cash">
+		select * from user_apply_cash where user_id=#{user_id} order by create_time desc limit #{start},#{number}
+	</select>
+</mapper>

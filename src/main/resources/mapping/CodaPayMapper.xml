@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.CodaPayMapper">
+	<insert id="insOrder" parameterType="com.douliao.controller.server.model.OrderInfo" useGeneratedKeys="true" keyProperty="id">
+		insert into order_info(user_id,order_id,goods_id,pay_type,create_time,pay_total,channel_id,status) values(#{user_id},#{order_id},#{goods_id},#{pay_type},#{create_time},#{pay_total},#{channel_id},#{status})
+	</insert>
+	<update id="updateOrder" parameterType="map">
+		update order_info 
+		<set>
+			<if test="TxnId!=null and TxnId!=''">
+				paymentId=#{TxnId},
+			</if>
+			<if test="status!=null and status!=''">
+				status=#{status}
+			</if>
+		</set>
+		 where order_id=#{OrderId}
+	</update>
+</mapper>

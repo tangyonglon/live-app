@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.PersonDetailMapper">
+	<select id="findAllCharacterType" resultType="com.douliao.model.database.CharacterType">
+		select * from character_type where status=1
+	</select>
+	<select id="findAllUserHobby" resultType="com.douliao.model.database.Hobby">
+		select * from hobby where status=1
+	</select>
+	<select id="selHobbyId" parameterType="java.lang.Integer" resultType="com.douliao.model.database.User_hobby_list">
+		select * from user_hobby_list where user_id=#{userId}
+	</select>
+	<select id="selHobby" resultType="com.douliao.model.database.Hobby">
+		select * from hobby where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+	</select>
+	<select id="findUser_characterById" parameterType="com.douliao.controller.server.model.FindCharacterTypeParam" resultType="com.douliao.model.database.User_character">
+		select * from user_character where user_id=#{userId} and belong_id=#{belongId}
+	</select>
+	<select id="selCharacterType" resultType="com.douliao.model.database.CharacterType">
+		select * from character_type where id in 
+		<foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+	</select>
+	<update id="updateUserInfo" parameterType="com.douliao.controller.server.model.UpdatePersonParam">
+		update live_app_user_info
+		<set>
+			<if test="userName!=null and userName!=''">
+				user_name=#{userName},
+			</if>
+			<if test="userAge!=0 and userAge!=null">
+				user_age=#{userAge},
+			</if>
+			<if test="userSex!=0 and userSex!=null">
+				user_sex=#{userSex},
+			</if>
+			<if test="userHeight!=0 and userHeight!=null">
+				user_height=#{userHeight},
+			</if>
+			<if test="userWeight!=0 and userWeight!=null">
+				user_weight=#{userWeight},
+			</if>
+			<if test="makeFriendsGoal!=null and makeFriendsGoal!=''">
+				make_friends_goal=#{makeFriendsGoal},
+			</if>
+		</set>
+		where user_id=#{userId}
+	</update>
+	<select id="findMyVideo" parameterType="com.douliao.controller.server.model.MyVideoParam" resultType="com.douliao.model.response.VideoList">
+		select id,user_id,video_title,video_description,video_url,support,watch_number,create_time,video_type,video_new_name,price,type,video_level,img_url,status
+		 from video_list where user_id=#{userId} and status!=4 order by create_time desc limit #{start},#{number}
+	</select>
+	<select id="findWatchHistory" parameterType="com.douliao.controller.server.model.MyVideoParam" resultType="com.douliao.model.response.WatchHistoryModel">
+		select wh.user_id user_id,wh.video_id video_id,vl.video_description video_description,vl.support support,vl.watch_number watch_number,vl.img_url,laui.user_name user_name,laui.user_head user_head 
+		from watch_history wh left join video_list vl on wh.video_id=vl.id left join live_app_user_info laui on laui.user_id=vl.user_id 
+		where wh.user_id=#{userId} limit #{start},#{number}
+	</select>
+	<select id="isFollow" parameterType="com.douliao.controller.server.model.FollowParam" resultType="com.douliao.model.database.Follow">
+		select * from follow where user_id=#{userId} and fans_user_id=#{fans_user_id}
+	</select>
+	<update id="upFollowStatus" parameterType="com.douliao.controller.server.model.FollowParam">
+		update follow set status=#{status} where user_id=#{userId} and fans_user_id=#{fans_user_id}
+	</update>
+	<insert id="insFollow" parameterType="com.douliao.controller.server.model.FollowParam">
+		insert into follow(user_id,fans_user_id,create_time,status) values(#{userId},#{fans_user_id},#{create_time},#{status})
+	</insert>
+	<select id="selPersonInfo" parameterType="java.lang.Integer" resultType="com.douliao.model.response.PersonInfo">
+		select laui.user_id,laui.user_head,laui.user_name,laui.user_sex,laui.user_age,laui.user_weight,laui.user_height,laui.make_friends_goal,uti.live_level,uti.live_price from live_app_user_info laui left join user_tv_info uti on laui.user_id=uti.user_id where laui.user_id=#{userId}
+	</select>
+	<select id="selInterestByUserId" parameterType="com.douliao.controller.server.model.InterestParam" resultType="com.douliao.model.database.User_hobby_list">
+		select * from user_hobby_list where user_id=#{userId}
+	</select>
+	<update id="saveInterest" parameterType="com.douliao.controller.server.model.InterestParam">
+		update user_hobby_list set hobby_id=#{hobby_id} where user_id=#{userId}
+	</update>
+	<insert id="insInterest" parameterType="com.douliao.controller.server.model.InterestParam">
+		insert into user_hobby_list(user_id,hobby_id) values(#{userId},#{hobby_id})
+	</insert>
+	<update id="saveMyType" parameterType="com.douliao.controller.server.model.PersonTypeParam">
+		update user_character set character_id=#{type_id} where user_id=#{userId} and belong_id=#{belong_id}
+	</update>
+	<select id="selTypeByUserId" parameterType="com.douliao.controller.server.model.PersonTypeParam" resultType="com.douliao.model.database.User_character">
+		select * from user_character where user_id=#{userId} and belong_id=#{belong_id}
+	</select>
+	<insert id="insMyType" parameterType="com.douliao.controller.server.model.PersonTypeParam">
+		insert into user_character(user_id,character_id,belong_id) values(#{userId},#{type_id},#{belong_id})
+	</insert>
+	<update id="updatefans" parameterType="com.douliao.model.database.Live_app_user_info">
+		update live_app_user_info set fans_number=#{fans_number},version=#{version}+1 where user_id=#{user_id} and version=#{version}
+	</update>
+	<select id="selUserInfo" parameterType="com.douliao.controller.server.model.FollowParam" resultType="com.douliao.model.database.Live_app_user_info">
+		select * from live_app_user_info where user_id=#{userId}
+	</select>
+	<select id="selFollowList" parameterType="com.douliao.controller.server.model.FollowListParam" resultType="com.douliao.model.response.FollowList">
+		select laui.user_id,laui.user_name,laui.user_head from follow f left join live_app_user_info laui on f.user_id=laui.user_id where status=1
+		<if test="type==1">
+			and f.fans_user_id=#{userId}
+		</if>
+		<if test="type==2">
+			and f.user_id=#{userId}
+		</if>
+		limit #{start},#{number}
+	</select>
+	<select id="isFollowUser" parameterType="com.douliao.controller.server.model.SearchUserInfoParam" resultType="com.douliao.model.database.Follow">
+		select * from follow where user_id=#{userId} and fans_user_id=#{loginUserId} and status=1
+	</select>
+</mapper>

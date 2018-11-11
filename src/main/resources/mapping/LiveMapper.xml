@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.LiveMapper">
+	<select id="selLivePrice" parameterType="java.lang.Integer" resultType="com.douliao.model.Room_info">
+		select live_price,profit from user_tv_info where user_id=#{userId}
+	</select>
+	<insert id="createRoom" parameterType="com.douliao.model.database.Live_room_info" useGeneratedKeys="true" keyProperty="id">
+		insert into live_room_info(live_user_id,room_price,create_time,live_profit,status) values(#{live_user_id},#{room_price},#{create_time},#{live_profit},#{status})
+	</insert>
+	<update id="updateLiveStatus" parameterType="java.lang.Integer">
+		update user_tv_info set status=3 where user_id=#{userId}
+	</update>
+	<update id="updateRoomInfo" parameterType="com.douliao.controller.server.model.LoginChannelParam">
+		update live_room_info set user_id=#{userId},chat_start_time=#{startTime} where id=#{channel} and status=1
+	</update>
+	<select id="selById" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Live_room_info">
+		select * from live_room_info where id=#{channel}
+	</select>
+	<update id="updateGold" parameterType="com.douliao.controller.server.model.CloseChannelParam">
+		update live_app_user_info set user_package=user_package-#{gold} where user_id=#{user_id} and user_package-#{gold}>=0
+	</update>
+	<update id="updateScore">
+		update live_app_user_info set user_score=user_score+#{score} where user_id=#{live_user_id}
+	</update>
+	<update id="closeRoom" parameterType="com.douliao.controller.server.model.CloseChannelParam">
+		update live_room_info set status=2 where id=#{channel}
+	</update>
+	<update id="liveStatus" parameterType="com.douliao.controller.server.model.LiveParam">
+		update user_tv_info set status=#{status} where user_id=#{userId} and status!=4
+	</update>
+	<update id="updateStars" parameterType="com.douliao.controller.server.model.EvaluateParam">
+		update live_room_info set user_evaluate_level=#{stars} where id=#{channel}
+	</update>
+	<select id="selEverdayVideo" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Everyday_live_list">
+		select * from everyday_live_list where user_id=#{userId}
+	</select>
+	<select id="selVideoClips" parameterType="com.douliao.controller.server.model.VideoClipsParam" resultType="com.douliao.model.VideoClips">
+		select * from (
+	SELECT vl.id,vl.user_id as vuser_id,vl.video_description,vl.support,vl.watch_number,vl.price,vl.type,vl.img_url,vl.status,vl.video_level,laui.user_head,laui.user_name 
+	FROM video_list vl left join live_app_user_info laui on vl.user_id=laui.user_id 
+	WHERE vl.type=1 and vl.status=2 
+	<if test="video_tag!=0 and video_tag!=''"> 
+			and video_tag=#{video_tag}
+		</if>
+		<if test="video_level!=null and video_level!=''">
+			and video_level in 
+			<foreach collection="video_level" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	) as t1 JOIN (SELECT ROUND(RAND() * ((SELECT MAX(id) FROM video_list)-(450))+(450)) AS id) AS t2   
+	WHERE t1.id >= t2.id   
+	ORDER BY t1.id LIMIT 10; 
+		
+<!-- 		select vl.id,vl.user_id as vuser_id,vl.video_description,vl.support,vl.watch_number,vl.price,vl.type,vl.img_url,laui.user_head,laui.user_name from video_list vl left join live_app_user_info laui on vl.user_id=laui.user_id where vl.type=#{type} and vl.status=2 -->
+<!-- 		<if test="video_tag!=0 and video_tag!=''"> -->
+<!-- 			and video_tag=#{video_tag} -->
+<!-- 		</if> -->
+<!-- 		<if test="video_level!=null and video_level!=''"> -->
+<!-- 			and video_level in  -->
+<!-- 			<foreach collection="video_level" index="index" item="item" open="(" separator="," close=")"> -->
+<!-- 				#{item} -->
+<!-- 			</foreach> -->
+<!-- 		</if> -->
+<!-- 		 order by vl.create_time desc limit #{start},#{number} -->
+	</select>
+	<select id="selHotList" parameterType="com.douliao.controller.server.model.VideoClipsParam" resultType="com.douliao.model.HotList">
+		select el.user_id,el.live_url,el.everyday_img,uti.heat,uti.live_price,uti.status,laui.user_head,laui.user_name from everyday_live_list el left join user_tv_info uti on el.user_id=uti.user_id left join live_app_user_info laui on el.user_id=laui.user_id where uti.status not in(2,4) order by laui.fans_number limit #{start},#{number}
+	</select>
+	<select id="selNewList" parameterType="com.douliao.controller.server.model.VideoClipsParam" resultType="com.douliao.model.NewList">
+		select el.user_id,el.live_url,el.everyday_img,uti.heat,uti.live_price,uti.status,laui.user_head,laui.user_name from everyday_live_list el left join user_tv_info uti on el.user_id=uti.user_id left join live_app_user_info laui on el.user_id=laui.user_id where uti.status not in(2,4) order by uti.create_time limit #{start},#{number}
+	</select>
+	<select id="selVideoInfo" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Video_List">
+		select vl.id,vl.user_id,vl.video_description,vl.video_url,vl.create_time,vl.watch_number,vl.price,vl.img_url,vl.video_old_name,vl.video_new_name,vl.version,laui.praise_channel,laui.comment_channel,laui.gift_channel from video_list vl left join live_app_user_info laui on vl.user_id=laui.user_id where vl.id=#{id}
+	</select>
+	<update id="updateWatchNumber" parameterType="com.douliao.model.database.Video_List">
+		update video_list set watch_number=#{watch_number}+1,version=#{version}+1 where id=#{id} and version=#{version}
+	</update>
+	<update id="updateUserPackage" parameterType="map">
+		update live_app_user_info set user_package=user_package-#{price} where user_id=#{userId} and user_package-#{price}>=0
+	</update>
+	<update id="updateIdentity" parameterType="com.douliao.controller.server.model.LiveParam">
+		update live_app_user_info set user_identity=#{status} where user_id=#{userId}
+	</update>
+	<update id="insLiveTime" parameterType="com.douliao.controller.server.model.LiveParam">
+		insert into live_time(live_user_id,start_time,end_time,time,status) values(#{userId},#{start_time},#{end_time},#{time},#{status})
+	</update>
+	<select id="selNewLiveTime" parameterType="com.douliao.controller.server.model.LiveParam" resultType="com.douliao.model.database.Live_time">
+		select * from live_time where live_user_id=#{userId} and status=1 order by start_time limit 1
+	</select>
+	<update id="upLiveTime" parameterType="com.douliao.controller.server.model.LiveParam">
+		update live_time set end_time=#{end_time},status=#{status} where live_user_id=#{userId}
+	</update>
+	<update id="updateLiveRecord" parameterType="com.douliao.controller.server.model.CloseChannelParam">
+		update live_record set today_chat_time=today_chat_time+#{chat_time},today_score=today_score+#{score} where live_user_id=#{live_user_id} and live_date=#{date}
+	</update>
+	<select id="selTodayRecord" parameterType="com.douliao.controller.server.model.LiveParam" resultType="com.douliao.model.database.Live_record">
+		select * from live_record where live_user_id=#{userId} and live_date=#{date}
+	</select>
+	<insert id="insLiveRecord" parameterType="com.douliao.controller.server.model.LiveParam">
+		insert into live_record(live_user_id,live_date,create_time) values(#{userId},#{date},#{start_time})
+	</insert>
+	<select id="selLiveRecord" parameterType="com.douliao.controller.server.model.LiveParam" resultType="com.douliao.model.database.Live_record">
+		select * from live_record where live_user_id=#{userId} and live_date=#{date} 
+	</select>
+	<update id="updateLiveUserStatus" parameterType="java.lang.Integer">
+		update user_tv_info set status=1 where user_id=#{userId}
+	</update>
+	<select id="selUserInfo" parameterType="com.douliao.controller.server.model.ProfitParam" resultType="com.douliao.model.response.TodayLive">
+		select laui.user_id,laui.user_name,laui.user_head,lr.today_chat_time from live_app_user_info laui left join live_record lr on laui.user_id=lr.live_user_id where laui.user_id=#{userId} and lr.live_date=#{date} order by create_time desc limit 1
+	</select>
+	<select id="selLiveRoomById" parameterType="com.douliao.controller.server.model.ProfitParam" resultType="com.douliao.model.database.Live_room_info">
+		select * from live_room_info where id=#{channel}
+	</select>
+	<select id="selRoomAllGifts" parameterType="com.douliao.controller.server.model.ProfitParam" resultType="com.douliao.model.TempObj">
+		select lrg.amount,g.id,g.gifts_name,g.gifts_url from live_room_gifts lrg left join gifts g on lrg.gifts_id=g.id where live_room_id=#{channel}
+	</select>
+	<update id="insChatStartTime" parameterType="map">
+		update live_room_info set chat_start_time=#{start_time} where user_id=#{userId} and status=1
+	</update>
+	<update id="insChatEndTime" parameterType="map">
+		update live_room_info set chat_end_time=#{end_time}	 where user_id=#{userId} and status=1
+	</update>
+	<update id="countTodayLiveTime" parameterType="com.douliao.controller.server.model.LiveParam">
+		update live_record set today_online_time=today_online_time+#{time} where live_user_id=#{userId} order by create_time desc limit 1
+	</update>
+	<update id="updateUserScore" parameterType="com.douliao.controller.server.model.ProfitParam">
+		update live_app_user_info set user_score=user_score+#{user_score} where user_id=#{userId}
+	</update>
+	<update id="updateChatEndTime" parameterType="com.douliao.model.database.Live_room_info">
+		update live_room_info set chat_end_time=#{chat_end_time} where id=#{id}
+	</update>
+	<select id="selChatEndTime" parameterType="map" resultType="com.douliao.model.database.Live_room_info">
+		select * from live_room_info where user_id=#{userId} and status=1 order by create_time desc limit 1
+	</select>
+	<insert id="insWatchHistory" parameterType="map">
+		insert into watch_history (user_id,video_id,user_id_video_id,create_time,status) values(#{userId},#{video_id},#{user_id_video_id},#{create_time},#{status}) on  DUPLICATE key update create_time=#{create_time}
+	</insert>
+	<select id="countVideoComment" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(id) from comments where video_id=#{id}
+	</select>
+	<insert id="countScore" parameterType="com.douliao.model.response.TodayLive">
+		insert into count_user_score (user_id,total_score,live_score) values(#{user_id},#{user_reward_score},#{user_reward_score}) on  DUPLICATE key update total_score=total_score+#{user_reward_score},live_score=live_score+#{user_reward_score}
+	</insert>
+	<select id="selProfit" parameterType="java.lang.Integer" resultType="java.lang.Double">
+		select live_profit from live_app_user lau left join country c on lau.country_id=c.id where lau.id=#{user_id}
+	</select>
+	<select id="selUserAllInfo" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Live_app_user_info">
+		select * from live_app_user_info where user_id=#{user_id}
+	</select>
+	<update id="updateUserScoreByVideo" parameterType="com.douliao.model.database.Live_app_user_info">
+		update live_app_user_info set user_score=#{user_score},version=#{version}+1 where user_id=#{user_id} and version=#{version}
+	</update>
+	<insert id="countVideoScore" parameterType="com.douliao.model.database.Video_List">
+		insert into count_user_score (user_id,total_score,video_score) values(#{user_id},#{profitScore},#{profitScore}) on  DUPLICATE key update total_score=total_score+#{profitScore},video_score=video_score+#{profitScore}
+	</insert>
+	<select id="selVideoFilter" parameterType="com.douliao.controller.server.model.VideoClipsParam" resultType="com.douliao.model.database.Video_level_filter">
+		select id,country_id,channel_id,video_level,status from video_level_filter where country_id=#{country_id} and status=1
+		<if test="channel_id==0">
+			and channel_id=0
+		</if>
+		<if test="channel_id!=null and channel_id!='' and channel_id!=0">
+			and channel_id=#{channel_id}
+		</if>
+	</select>
+</mapper>

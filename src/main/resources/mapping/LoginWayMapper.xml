@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.LoginWayMapper">
+	<select id="selLoginFilter" parameterType="com.douliao.controller.server.model.LoginWayParam" resultType="com.douliao.model.database.Video_level_filter">
+		select id,country_id,channel_id,video_level,pay_way_id,login_way_id,status from video_level_filter where status=1 and channel_id=0
+		<if test="country_id!=0">
+			and country_id=#{country_id}
+		</if>
+	</select>
+	<select id="selLoginWay" parameterType="com.douliao.controller.server.model.LoginWayParam" resultType="com.douliao.model.database.Login_way_info">
+		select id,login_way,login_way_img,status from login_way_info where status=1
+		<if test="login_way_id!=null and login_way_id!=''">
+			and id in
+			<foreach collection="login_way_id" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+</mapper>

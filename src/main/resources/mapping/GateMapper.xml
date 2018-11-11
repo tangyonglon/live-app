@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.GateMapper">
+	<select id="selInterface" parameterType="com.douliao.controller.server.model.GateParams" resultType="com.douliao.model.database.Gate">
+		select * from gate where keyword=#{keyword} and status=1
+	</select>
+</mapper>

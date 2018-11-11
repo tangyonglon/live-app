@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.GoodsMapper">
+	<select id="selAllGoods" parameterType="com.douliao.controller.server.model.AllGoodsParam" resultType="com.douliao.model.database.Goods">
+		select g.id,g.title,g.description,g.goods_url,g.country_id,g.goods_price,CONCAT(g.goods_price,c.currency_code) as total_price,g.create_time,g.sort,g.status from goods g left join country c on g.country_id=c.id where g.country_id=#{country_id}
+	</select>
+</mapper>

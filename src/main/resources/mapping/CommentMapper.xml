@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.CommentMapper">
+	<select id="selComment" parameterType="com.douliao.controller.server.model.CommentParam" resultType="com.douliao.model.database.Comments">
+		select * from comments where user_id=#{userId} and video_id=#{videoId}
+	</select>
+	<insert id="insComments" parameterType="com.douliao.controller.server.model.CommentParam">
+		insert into comments(video_id,user_id,comment_content,create_time) values(#{videoId},#{userId},#{content},#{create_time})
+	</insert>
+	<select id="selCommentById" parameterType="com.douliao.controller.server.model.SelCommentParam" resultType="com.douliao.model.CommentInfo">
+		select c.id,c.video_id,c.user_id,c.comment_content,c.create_time,laui.user_name,laui.user_head from comments c left join live_app_user_info laui on c.user_id=laui.user_id where c.video_id=#{videoId} limit #{start},#{number}
+	</select>
+</mapper>

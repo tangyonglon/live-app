@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.RegisterMapper">
+	<select id="findAllCountry" parameterType="java.lang.Integer" resultType="com.douliao.model.CountryInfo">
+		select cl.country_id as id,cl.translate_country_name as country_name,c.phone_code as phone_code,c.language_id,c.language_code,c.currency_type,c.currency_code from country_language cl left join country c on cl.country_id=c.id where cl.language_id=#{language_id} and c.status=1
+	</select>
+	<insert id="insRegister" parameterType="com.douliao.controller.server.model.RegisterParam" useGeneratedKeys="true" keyProperty="id">
+		insert into live_app_user(phone_code,user_phone,user_password,user_create_time,country_id,registerWay,status) 
+		values(#{phoneCode},#{userPhone},#{userPassword},#{userCreateTime},#{country_id},#{registerWay},#{status})
+	</insert>
+	<update id="updatePassword" parameterType="com.douliao.controller.server.model.UpdatePasswordParam">
+		update live_app_user set user_password=#{password} where phone_code=#{phoneCode} and user_phone=#{userPhone}
+	</update>
+	<insert id="insUserInfo" parameterType="com.douliao.controller.server.model.RegisterParam">
+		insert into live_app_user_info(user_id) value(#{id})
+	</insert>
+</mapper>

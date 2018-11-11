@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.PayMapper">
+	<select id="selPayFilter" parameterType="com.douliao.controller.server.model.PayWayParam" resultType="com.douliao.model.database.Video_level_filter">
+		select id,country_id,channel_id,video_level,pay_way_id,status from video_level_filter where status=1
+		<if test="country_id!=0">
+			and country_id=#{country_id}
+		</if>
+		<if test="channel_id==0">
+			and channel_id=0
+		</if>
+		<if test="channel_id!=0">
+			and channel_id=#{channel_id}
+		</if>
+	</select>
+	<select id="selPayWay" parameterType="com.douliao.controller.server.model.PayWayParam" resultType="com.douliao.model.Pay_way_info">
+		select id,pay_way,pay_img,status from pay_way_info where status=1
+		<if test="pay_way!=null and pay_way!=''">
+			and id in
+			<foreach collection="pay_way" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+</mapper>

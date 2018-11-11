@@ -1,0 +1,86 @@
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: live-service
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/douliao?useUnicode=true&autoReconnect=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    tomcat:
+      test-while-idle: true
+      validation-query: SELECT 1
+      time-between-eviction-runs-millis: 30000
+      max-active: 100
+      initial-size: 20
+      max-wait: 10000
+      min-idle: 10
+      min-evictable-idle-time-millis: 30000
+  redis:
+    database: 0
+    host: 192.168.1.212
+    post: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 100
+        max-wait: 5000
+        max-idle: 8
+        min-idle: 5
+    timeout: 3000
+          
+
+
+## 配置服务注册中心的地址（实践单节点服务注册中心案例时，放开此注释，并且注释下面的代码）
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://127.0.0.1:8760/eureka/
+      
+#redis:
+#  host: 10.30.11.113
+#  port: 6379
+#  pool:
+#    max-active: 100
+#    max-wait: 5000
+#    max-idle: 8
+#    min-idle: 5
+#  timeout: 1000
+  
+jwt:
+  secret: password
+
+
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  type-aliases-package: com.douliao.model
+  configuration:
+    log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
+
+web:
+  languageId: 1
+  imagesPath: D:/imges
+  videoPath: D:/video
+  everydayvideoPath: D:/everydayVideo
+  maxFileSize: 100MB
+  maxRequestSize: 100MB
+  ffmpegPath: D:\eclipseWorkSpace\live-app\src\main\resources\ffmpeg\ffmpeg.exe
+  playUrl: 10.30.11.112:8080
+  file: D:/file
+  showFile: 10.30.11.112:8080/file
+  
+huaxin:
+  url: http://sh2.ipyy.com/sms.aspx?action=send
+  account: sj463
+  password: sj46312
+
+yunpian:
+  yUrl: https://sms.yunpian.com/v2/sms/single_send.json
+  apikey: 0bf0e8c1853d35bddb6b5ee025e00cd9
+  template: 【echat】your verification code
+  testCode: douliao
+

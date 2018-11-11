@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.QuickLoginMapper">
+	<insert id="insRegister" parameterType="com.douliao.controller.server.model.QuickLoginParam" useGeneratedKeys="true" keyProperty="id">
+		insert into live_app_user(country_id,registerWay,user_create_time) values(#{country_id},#{registerWay},#{create_time})
+	</insert>
+	<insert id="insUserInfo" parameterType="com.douliao.controller.server.model.QuickLoginParam">
+		insert into live_app_user_info(user_id) value(#{user_id})
+	</insert>
+	<select id="selIsOnline" parameterType="com.douliao.controller.server.model.QuickLoginParam" resultType="com.douliao.model.database.UserToken">
+		select * from user_token where user_id=#{user_id} and login_mode=#{loginMode} limit 1
+	</select>
+	<update id="updateToken" parameterType="com.douliao.controller.server.model.QuickLoginParam">
+		update user_token set token=#{token},login_time=#{loginTime},mac=#{mac},mac_type=#{mac_type},login_ip=#{login_ip},channel_id=#{channel_id},status=#{status} where user_id=#{user_id} and login_mode=#{loginMode}
+	</update>
+	<insert id="insToken" parameterType="com.douliao.controller.server.model.QuickLoginParam">
+		insert into user_token(user_id,token,login_time,mac,mac_type,login_mode,login_ip,channel_id,status) values(#{user_id},#{token},#{loginTime},#{mac},#{mac_type},#{loginMode},#{login_ip},#{channel_id},#{status})
+	</insert>
+	<update id="updateAccount" parameterType="com.douliao.controller.server.model.BindParam">
+		update live_app_user
+		<set>
+			<if test="user_phone!=null and user_phone!=''">
+				phone_code=#{phoneCode},user_phone=#{user_phone},user_password=#{password},country_id=#{country_id}
+			</if>
+			<if test="account!=null and account!=''">
+				user_account=#{account},account_type=#{account_type}
+			</if>
+		</set>
+		where id=#{user_id}
+	</update>
+</mapper>

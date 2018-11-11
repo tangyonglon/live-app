@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.PraiseMapper">
+	<select id="selVideoList" parameterType="com.douliao.controller.server.model.PraiseParam" resultType="com.douliao.model.database.Video_List">
+		select * from video_list where id=#{videoId}
+	</select>
+	<update id="countPrise" parameterType="com.douliao.model.database.Video_List">
+		update video_list set support=#{support},version=#{version}+1 where id=#{id} and version=#{version}
+	</update>
+	<insert id="insPraise" parameterType="com.douliao.controller.server.model.PraiseParam">
+		replace into praise(user_id, video_id,user_id_video_id,status) values(#{userId},#{videoId},#{user_id_video_id},#{status})
+	</insert>
+</mapper>

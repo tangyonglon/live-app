@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.OrderMapper">
+	<insert id="insOrder" parameterType="com.douliao.controller.server.model.CreateOrderParam">
+		insert into order_info(user_id,order_id,goods_id,pay_type,create_time,pay_total,channel_id,status) values(#{userId},#{order_id},#{goods_id},#{pay_type},#{create_time},#{goods_price},#{channel_id},#{status})
+	</insert>
+	<update id="updateOrder" parameterType="map">
+		update order_info set paymentId=#{paymentId},payerId=#{payerId},end_time=#{end_time},status=#{status} where order_id=#{order_id}
+	</update>
+	<select id="selGoods_price" parameterType="com.douliao.controller.server.model.CreateOrderParam" resultType="com.douliao.model.CreateOrderModel">
+		select g.goods_price,c.currency_code from goods g left join country c on g.country_id=c.id where g.id=#{goods_id}
+	</select>
+	<select id="payHistory" parameterType="com.douliao.controller.server.model.PayHistoryParam" resultType="com.douliao.model.PayHistoryModel">
+		select oi.user_id,oi.order_id,oi.end_time,oi.goods_id,g.title from order_info oi left join goods g on oi.goods_id=g.id
+		 where oi.user_id=#{userId} and oi.status=2 limit #{start},#{number}
+	</select>
+</mapper>

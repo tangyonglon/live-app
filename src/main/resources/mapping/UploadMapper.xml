@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.douliao.mapper.UploadMapper">
+	<insert id="insVideo" parameterType="com.douliao.model.database.Video_List">
+		insert into video_list(user_id,video_title,video_description,video_url,save_url,create_time,status,video_type,video_size,video_old_name,video_new_name,img_url,country_id) values(#{user_id},#{video_title},#{video_description},#{video_url},#{save_url},#{create_time},#{status},#{video_type},#{video_size},#{video_old_name},#{video_new_name},#{img_url},#{country_id})
+	</insert>
+	<update id="updateHead" parameterType="map">
+		update live_app_user_info set user_head=#{filepath} where user_id=#{userId}
+	</update>
+	<insert id="insEverydayVideo" parameterType="com.douliao.model.database.Video_List">
+		insert into everyday_live_list(user_id,live_url,save_url,create_time,everyday_img,video_type,video_size,video_name,status) values(#{user_id},#{video_url},#{save_url},#{create_time},#{img_url},#{video_type},#{video_size},#{video_new_name},#{status})
+	</insert>
+	<select id="isHasVideo" parameterType="com.douliao.model.database.Video_List" resultType="com.douliao.model.database.Everyday_live_list">
+		select * from everyday_live_list where user_id=#{user_id} and status=1
+	</select>
+	<update id="updateEverydayVideo" parameterType="com.douliao.model.database.Video_List">
+		update everyday_live_list
+		<set>
+			<if test="video_url!=null and video_url!=''">
+				live_url=#{video_url},
+			</if>
+			<if test="save_url!=null and save_url!=''">
+				save_url=#{save_url},
+			</if>
+			<if test="create_time!=null and create_time!=''">
+				create_time=#{create_time},
+			</if>
+			<if test="video_type!=null and video_type!=''">
+				video_type=#{video_type},
+			</if>
+			<if test="video_size!=null and video_size!=''">
+				video_size=#{video_size},
+			</if>
+			<if test="video_new_name!=null and video_new_name!=''">
+				video_name=#{video_new_name},
+			</if>
+			<if test="img_url!=null and img_url!=''">
+				everyday_img=#{img_url},
+			</if>
+			<if test="status!=0">
+				status=1
+			</if>
+		</set>
+		 where user_id=#{user_id}
+	</update>
+	<select id="isAudit" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Everyday_live_list">
+		select * from everyday_live_list where user_id=#{userId} order by create_time limit 1
+	</select>
+	<select id="selOldData" parameterType="com.douliao.controller.server.model.AuditParam" resultType="com.douliao.model.database.Everyday_live_list">
+		select * from everyday_live_list where user_id=#{userId} and status=#{status}
+	</select>
+	<update id="updateData" parameterType="com.douliao.controller.server.model.AuditParam">
+		update everyday_live_list set status=#{status},update_time=#{update_time} where id=#{id} and user_id=#{userId}
+	</update>
+	<insert id="insUserTVInfo" parameterType="com.douliao.model.database.Video_List">
+		insert into user_tv_info(user_id,create_time,profit) value(#{user_id},#{create_time},#{profit})
+	</insert>
+	<select id="selVideoType" resultType="com.douliao.model.database.VideoType">
+		select * from video_type where status=1 and country_id=#{country_id}
+	</select>
+	<select id="playAuditVideo" parameterType="java.lang.Integer" resultType="com.douliao.model.database.Everyday_live_list">
+		select * from everyday_live_list where user_id=#{userId} and status=2 order by create_time limit 1
+	</select>
+	<select id="hasTVInfo" parameterType="com.douliao.model.database.Video_List" resultType="com.douliao.model.database.User_tv_info">
+		select * from user_tv_info where user_id=#{user_id}
+	</select>
+	<update id="updateLiveAuth" parameterType="com.douliao.model.database.Video_List">
+		update live_app_user_info set user_authentication=2 where user_id=#{user_id}
+	</update>
+	<update id="updateVideo" parameterType="com.douliao.controller.server.model.DeleteParam">
+		update video_list set status=4 where user_id=#{userId} and id=#{id}
+	</update>
+	<select id="selVideoByUserId" parameterType="com.douliao.controller.server.model.VideoByUserIdParam" resultType="com.douliao.model.VideoClips">
+		select vl.id,vl.user_id,vl.video_description,vl.support,vl.watch_number,vl.price,vl.type,vl.img_url,laui.user_name,laui.user_head
+		 from video_list vl left join live_app_user_info laui on vl.user_id=laui.user_id 
+		 where vl.user_id=#{userId} and vl.status=2 
+		 <if test="video_level!=null and video_level!=''">
+			and video_level in 
+			<foreach collection="video_level" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		 order by vl.create_time desc limit #{start},#{number}
+	</select>
+	<select id="selProfit" parameterType="java.lang.Integer" resultType="java.lang.Double">
+		select c.live_profit from live_app_user lau  left join country c on lau.country_id=c.id where lau.id=#{userId}
+	</select>
+	<select id="selVideoFilter" parameterType="com.douliao.controller.server.model.VideoByUserIdParam" resultType="com.douliao.model.database.Video_level_filter">
+		select vlf.id,vlf.country_id,vlf.channel_id,vlf.video_level,vlf.status 
+		from live_app_user lau left join video_level_filter vlf on lau.country_id=vlf.country_id 
+		where lau.id=#{login_user_id} and vlf.status=1
+		<if test="channel_id==0">
+			and channel_id=0
+		</if>
+		<if test="channel_id!=null and channel_id!='' and channel_id!=0">
+			and vlf.channel_id=#{channel_id}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<Configuration status="WARN">  
+    <Properties>
+        <property name="LOG_PATH">d:/logs/</property>
+        <property name="LOG_FILE">live-app</property>
+    </Properties>
+    <Appenders>  
+        <Console name="Console" target="SYSTEM_OUT">  
+            <PatternLayout>  
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{requestId}] %-5level %logger{50} - %msg%n</pattern>
+            </PatternLayout>  
+        </Console>  
+        <RollingFile name="logfile" fileName="${LOG_PATH}/${LOG_FILE}.log"
+                  filePattern="${LOG_PATH}/$${date:yyyy-MM}/${LOG_FILE}-%d{yyyy-MM-dd}.log">
+          <PatternLayout> 
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{requestId}] %-5level %logger{50} - %msg%n</pattern>
+          </PatternLayout>  
+          <Policies>  
+                <TimeBasedTriggeringPolicy />  
+                <SizeBasedTriggeringPolicy size="50 MB" />  
+          </Policies>  
+          <DefaultRolloverStrategy max="31" />  
+        </RollingFile>  
+    </Appenders> 
+    
+    <Loggers> 
+        
+    <logger name="com.apache.ibatis" level="TRACE"/>
+    <logger name="java.sql.Connection" level="DEBUG"/>
+    <logger name="java.sql.Statement" level="DEBUG"/>
+    <logger name="java.sql.PreparedStatement" level="DEBUG"/>
+    <logger name="com.douliao.mapper" level="DEBUG" /> 
+        <root level="info">    
+          <AppenderRef ref="Console"/>  
+          <AppenderRef ref="logfile" /> 
+        </root>    
+    </Loggers>  
+</Configuration>  
