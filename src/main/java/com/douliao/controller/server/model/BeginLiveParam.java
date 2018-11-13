@@ -10,6 +10,5 @@ public class BeginLiveParam {
 	private String start_time;
 	private int status;
 	private double live_price;
-	private String im_channel;
 	
 }

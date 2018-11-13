@@ -17,18 +17,18 @@
 		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
 			update anchor_income ai,live_app_user_info laui
 			<set>
-				everyday_scroe=everyday_scroe+#{item.score},laui.user_score=laui.user_score+1
+				ai.everyday_scroe=ai.everyday_scroe+#{item.score},laui.user_score=laui.user_score+#{item.score}
 			</set>
-			where ai.anchor_id=laui.user_id and live_room_id=#{item.live_room_id} and income_date=#{item.date}
+			where ai.anchor_id=laui.user_id and ai.live_room_id=#{item.live_room_id} and ai.income_date=#{item.date}
 		</foreach>
 	</update>
 	<update id="updateTotalScore" parameterType="java.util.List">
 		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
-			update all_live_room
+			update all_live_room alr,all_live_room_info alri
 			<set>
-				anchor_total_score=anchor_total_score+#{item.score}
+				alr.anchor_total_score=alr.anchor_total_score+#{item.score},alri.score=alri.score+#{item.score}
 			</set>
-			where live_room_id=#{item.live_room_id}
+			where alr.live_room_id=alri.live_room_id and alr.live_room_id=#{item.live_room_id}
 		</foreach>
 	</update>
 	<select id="selAllRoom" resultType="map">

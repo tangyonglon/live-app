@@ -25,9 +25,6 @@
 	<select id="isAnchor" parameterType="com.douliao.controller.server.model.BeginLiveParam" resultType="com.douliao.model.database.Live_app_user_info">
 		select user_id,user_authentication from live_app_user_info where user_id=#{live_user_id}
 	</select>
-	<update id="updateIMChannel" parameterType="com.douliao.controller.server.model.BeginLiveParam">
-		update all_live_room set im_channel=#{im_channel} where live_room_id=#{live_room_id}
-	</update>
 	<select id="selLivePrice" parameterType="com.douliao.controller.server.model.BeginLiveParam" resultType="java.lang.Double">
 		select * from live_price where live_type=#{live_room_type}
 	</select>
@@ -87,11 +84,16 @@
 		select id,live_room_id,user_id,live_price,live_profit from all_live_room where live_room_id=#{live_room_id}
 	</select>
 	<update id="insUserIncome" parameterType="com.douliao.controller.server.model.GiveGiftParam">
-		update anchor_income anchor_total_score=anchor_total_score+#{score},everyday_scroe=everyday_scroe+#{everyday_scroe} where live_room_id=#{live_room_id} and income_date=#{income_date}
+		update anchor_income ai,live_app_user_info laui set everyday_scroe=everyday_scroe+#{score},laui.user_score=laui.user_score+#{score}
+		 where ai.anchor_id=laui.user_id and ai.live_room_id=#{live_room_id} and ai.income_date=#{income_date}
 	</update>
 	<insert id="insRoomGifts" parameterType="com.douliao.controller.server.model.GiveGiftParam">
 		insert into all_live_room_gifts(live_room_id,user_id,gifts_id,amount,gifts_price,total_gold,create_time) vlues(#{live_room_id},#{user_id},#{gifts_id},#{amount},#{gifts_price},#{total_gold},#{create_time})
 	</insert>
+	<update id="updateTotalScore" parameterType="com.douliao.controller.server.model.GiveGiftParam">
+		update all_live_room alr,all_live_room_info alri set alr.anchor_total_score=alr.anchor_total_score+#{score},alri.score=alri.score+#{score} 
+		where alr.live_room_id=alri.live_room_id and alr.live_room_id=#{item.live_room_id}
+	</update>
 	<select id="selUserPackage" parameterType="com.douliao.controller.server.model.GiveGiftParam" resultType="com.douliao.model.database.Live_app_user_info">
 		select user_id,user_package from live_app_user_info where user_id=#{user_id}
 	</select>
@@ -117,5 +119,16 @@
 		<foreach collection="array" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+	</select>
+	<select id="selFollow" parameterType="com.douliao.controller.server.model.AnchorInfoParam" resultType="map">
+		select * from follow where user_id=#{userId} and fans_user_id=#{look_user_id} and status=2
+	</select>
+	<select id="selLiveInfo" parameterType="com.douliao.controller.server.model.AnchorBalanceParam" resultType="com.douliao.model.database.All_live_room_info">
+		select * from all_live_room_info where live_user_id=#{live_user_id} order by start_time desc limit 1
+	</select>
+	<select id="selReceiveGift" parameterType="com.douliao.model.database.All_live_room_info" resultType="map">
+		select alrg.live_room_id,alrg.gifts_id,alrg.create_time,g.gifts_name,g.gifts_url 
+		from all_live_room_gifts alrg left join gifts g on alrg.gifts_id=g.id 
+		where alrg.live_room_id=#{live_room_id} and alrg.create_time>#{start_time} and #{end_time}>alrg.create_time
 	</select>
 </mapper>

@@ -3,6 +3,7 @@ package com.douliao.service;
 import java.util.List;
 import java.util.Map;
 
+import com.douliao.controller.server.model.AnchorBalanceParam;
 import com.douliao.controller.server.model.AnchorInfoParam;
 import com.douliao.controller.server.model.BeginLiveParam;
 import com.douliao.controller.server.model.CheckAudit;
@@ -15,6 +16,7 @@ import com.douliao.controller.server.model.SwitchRoomParam;
 import com.douliao.model.AnchorInfo;
 import com.douliao.model.database.All_live_room;
 import com.douliao.model.database.All_live_room_chat;
+import com.douliao.model.database.All_live_room_info;
 import com.douliao.model.database.Video_List;
 import com.douliao.result.ResultView;
 
@@ -43,5 +45,7 @@ public interface NewLiveService {
 	void updatechat(Map<String, Object> map);
 	
 	ResultView<AnchorInfo> anchorInfo(AnchorInfoParam anchorInfoParam);
+	
+	ResultView<All_live_room_info> selBalance(AnchorBalanceParam anchorBalanceParam);
 	
 }

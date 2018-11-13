@@ -15,6 +15,7 @@ public class AnchorInfo {
 	private String everyday_img;
 	private String im_channel;
 	private List<CharacterType> list;
+	private int follow_status;
 	
 	
 }

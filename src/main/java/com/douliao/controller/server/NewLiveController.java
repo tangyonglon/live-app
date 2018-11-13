@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.douliao.controller.server.model.AnchorBalanceParam;
 import com.douliao.controller.server.model.AnchorInfoParam;
 import com.douliao.controller.server.model.BeginLiveParam;
 import com.douliao.controller.server.model.CheckAudit;
@@ -34,6 +35,7 @@ import com.douliao.model.AnchorInfo;
 import com.douliao.model.Result;
 import com.douliao.model.database.All_live_room;
 import com.douliao.model.database.All_live_room_chat;
+import com.douliao.model.database.All_live_room_info;
 import com.douliao.result.ResultView;
 import com.douliao.service.NewLiveService;
 
@@ -239,6 +241,20 @@ public class NewLiveController {
 		
 		return resultView;
 	}
+	
+	/**
+	 * 主播端结算
+	 * @param anchorBalanceParam
+	 * @return
+	 */
+	@RequestMapping(value="/newLive/anchorBalance",method=RequestMethod.POST)
+	public ResultView<All_live_room_info> anchorBalance(AnchorBalanceParam anchorBalanceParam) {
+		ResultView<All_live_room_info> resultView=new ResultView<All_live_room_info>();
+		resultView=newLiveService.selBalance(anchorBalanceParam);
+		return resultView;
+	}
+	
+	
 	
 	public static void main(String[] args) {
 		List<Map<String, Object>> list=new ArrayList<Map<String,Object>>();

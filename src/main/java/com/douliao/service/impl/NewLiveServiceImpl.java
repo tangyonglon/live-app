@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.douliao.controller.server.model.AnchorBalanceParam;
 import com.douliao.controller.server.model.AnchorInfoParam;
 import com.douliao.controller.server.model.BeginLiveParam;
 import com.douliao.controller.server.model.CheckAudit;
@@ -20,6 +21,7 @@ import com.douliao.mapper.NewLiveMapper;
 import com.douliao.model.AnchorInfo;
 import com.douliao.model.database.All_live_room;
 import com.douliao.model.database.All_live_room_chat;
+import com.douliao.model.database.All_live_room_info;
 import com.douliao.model.database.Anchor_income;
 import com.douliao.model.database.CharacterType;
 import com.douliao.model.database.Gifts;
@@ -80,17 +82,18 @@ public class NewLiveServiceImpl implements NewLiveService{
 	public ResultView<BeginLiveParam> beginLive(BeginLiveParam beginLiveParam) {
 		ResultView<BeginLiveParam> resultView=new ResultView<BeginLiveParam>();
 		beginLiveParam.setStart_time(TimeFormat.getSimple());
-		beginLiveParam.setStatus(1);
+		if(beginLiveParam.getLive_room_type()==1) {
+			beginLiveParam.setStatus(3);
+		}else {
+			beginLiveParam.setStatus(1);
+		}
+		
 		//查询是否是主播
 		Live_app_user_info live_app_user_info=newLiveMapper.isAnchor(beginLiveParam);
 		if(live_app_user_info.getUser_authentication()==1) {
 			resultView.setCode(1017);
 			resultView.setMessage("用户未认证");
 			return resultView;
-		}
-		if(beginLiveParam.getIm_channel()!=null && !"".equals(beginLiveParam.getIm_channel())) {
-			//存入该直播间对应IM的频道地址
-			newLiveMapper.updateIMChannel(beginLiveParam);
 		}
 		
 		double live_price=newLiveMapper.selLivePrice(beginLiveParam);
@@ -218,7 +221,7 @@ public class NewLiveServiceImpl implements NewLiveService{
 			//赠送礼物
 			//1.个人金币扣除
 			//2.个人消费记录表记录
-			//3.主播积分增加（每日凌晨增加主播的积分）
+			//3.主播积分增加
 			//4.累计今日主播收益
 			//5.礼物记录
 			Gifts gifts=newLiveMapper.selGiftsInfo(giveGiftParam);
@@ -244,6 +247,8 @@ public class NewLiveServiceImpl implements NewLiveService{
 				giveGiftParam.setScore(giveGiftParam.getTotal_gold()*all_live_room.getLive_profit());
 				newLiveMapper.insUserIncome(giveGiftParam);
 				newLiveMapper.insRoomGifts(giveGiftParam);
+				//直播间总积分累计
+				newLiveMapper.updateTotalScore(giveGiftParam);
 			}
 			return live_app_user_info.getUser_package()-giveGiftParam.getTotal_gold();
 		} catch (Exception e) {
@@ -310,6 +315,14 @@ public class NewLiveServiceImpl implements NewLiveService{
 				anchorInfo.setList(list);
 			}
 		}
+		if(anchorInfoParam.getLook_user_id()!=0) {
+			List<Map<String, Object>> list=newLiveMapper.selFollow(anchorInfoParam);
+			if(list.size()>0) {
+				anchorInfo.setFollow_status(1);
+			}else {
+				anchorInfo.setFollow_status(2);
+			}
+		}
 		if(anchorInfo!=null) {
 			resultView.setCode(1000);
 			resultView.setMessage("成功");
@@ -318,6 +331,24 @@ public class NewLiveServiceImpl implements NewLiveService{
 			resultView.setCode(1001);
 			resultView.setMessage("暂无数据");
 		}
+		return resultView;
+	}
+
+	@Override
+	public ResultView<All_live_room_info> selBalance(AnchorBalanceParam anchorBalanceParam) {
+		ResultView<All_live_room_info> resultView=new ResultView<All_live_room_info>();
+		All_live_room_info all_live_room_info=newLiveMapper.selLiveInfo(anchorBalanceParam);
+		all_live_room_info.setTime(Live_Deductions.getChatTime(all_live_room_info.getStart_time(), all_live_room_info.getEnd_time()));
+		List<Map<String, Object>> list=newLiveMapper.selReceiveGift(all_live_room_info);
+		if(list.size()>0) {
+			all_live_room_info.setList(list);
+		}
+		if(all_live_room_info!=null) {
+			resultView.setCode(1000);
+			resultView.setMessage("成功");
+			resultView.setData(all_live_room_info);
+		}
+		
 		return resultView;
 	}
 
