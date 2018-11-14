@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,6 +139,7 @@ public class UserServiceImpl implements UserService {
 					String key=String.valueOf(loginParam.getUserId())+"-"+loginParam.getLoginMode();
 //					CreateToken.hmsetAll(key,map);
 					redisTemplate.opsForHash().putAll(key, map);
+					redisTemplate.expire(key, 24, TimeUnit.HOURS);
 					resultView.setCode(1000);
 					resultView.setMessage("登入成功");
 					loginParam.setPraise_channel(liveAppUser.getPraise_channel());

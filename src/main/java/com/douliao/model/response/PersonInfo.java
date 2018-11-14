@@ -2,6 +2,7 @@ package com.douliao.model.response;
 
 import java.util.List;
 
+import com.douliao.model.Anchor;
 import com.douliao.model.database.CharacterType;
 import com.douliao.model.database.Hobby;
 
@@ -23,4 +24,6 @@ public class PersonInfo {
 	private List<Hobby> hobbyList;
 	private List<CharacterType> myTypeList;
 	private List<CharacterType> otherTypeList;
+	private Anchor anchor;
+	
 }

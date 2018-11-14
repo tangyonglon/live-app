@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.douliao.controller.server.model.FindCharacterTypeParam;
 import com.douliao.controller.server.model.SearchUserInfoParam;
 import com.douliao.mapper.PersonDetailMapper;
+import com.douliao.model.Anchor;
+import com.douliao.model.database.All_live_room_info;
 import com.douliao.model.database.CharacterType;
 import com.douliao.model.database.Follow;
 import com.douliao.model.database.Hobby;
@@ -59,6 +61,22 @@ public class SearchServiceImpl implements SearchService {
 					}
 				}
 			}
+			
+			//是否是主播
+			Anchor anchor=personDetailMapper.selAnchor(searchUserInfoParam);
+			if(anchor!=null) {
+				//查询现在是否开播
+				All_live_room_info all_live_room_info=personDetailMapper.selIsLive(searchUserInfoParam);
+				if(all_live_room_info!=null) {
+					anchor.setLive_status(all_live_room_info.getStatus());
+				}else {
+					//还未直播过时，返回下播中状态
+					anchor.setLive_status(2);
+				}
+				personInfo.setAnchor(anchor);
+			}
+			
+			
 			resultView.setCode(1000);
 			resultView.setMessage("成功");
 			resultView.setData(personInfo);

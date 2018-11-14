@@ -12,6 +12,7 @@ import com.douliao.controller.server.model.EndLiveParam;
 import com.douliao.controller.server.model.EntryRoomParam;
 import com.douliao.controller.server.model.GiveGiftParam;
 import com.douliao.controller.server.model.LeaveRoomParam;
+import com.douliao.controller.server.model.ShowLiveParam;
 import com.douliao.controller.server.model.SwitchRoomParam;
 import com.douliao.model.AnchorInfo;
 import com.douliao.model.database.All_live_room;
@@ -80,7 +81,7 @@ public interface NewLiveMapper {
 	
 	int updateRoomChatStatus(Map<String, Object> map);
 	
-	List<Map<String, Object>> showLiveList();
+	List<Map<String, Object>> showLiveList(ShowLiveParam showLiveParam);
 	
 	AnchorInfo anchorInfo(AnchorInfoParam anchorInfoParam);
 	

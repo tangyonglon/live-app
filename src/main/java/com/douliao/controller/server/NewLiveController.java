@@ -30,6 +30,7 @@ import com.douliao.controller.server.model.EndLiveParam;
 import com.douliao.controller.server.model.EntryRoomParam;
 import com.douliao.controller.server.model.GiveGiftParam;
 import com.douliao.controller.server.model.LeaveRoomParam;
+import com.douliao.controller.server.model.ShowLiveParam;
 import com.douliao.controller.server.model.SwitchRoomParam;
 import com.douliao.model.AnchorInfo;
 import com.douliao.model.Result;
@@ -65,8 +66,8 @@ public class NewLiveController {
 	 * @return
 	 */
 	@RequestMapping(value="/newLive/showLiveList",method=RequestMethod.POST)
-	public ResultView<List<Map<String, Object>>> showLiveList() {
-		ResultView<List<Map<String, Object>>> resultView=newLiveService.showLiveList();
+	public ResultView<List<Map<String, Object>>> showLiveList(ShowLiveParam showLiveParam) {
+		ResultView<List<Map<String, Object>>> resultView=newLiveService.showLiveList(showLiveParam);
 		return resultView;
 	}
 	

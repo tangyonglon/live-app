@@ -12,6 +12,7 @@ import com.douliao.controller.server.model.EndLiveParam;
 import com.douliao.controller.server.model.EntryRoomParam;
 import com.douliao.controller.server.model.GiveGiftParam;
 import com.douliao.controller.server.model.LeaveRoomParam;
+import com.douliao.controller.server.model.ShowLiveParam;
 import com.douliao.controller.server.model.SwitchRoomParam;
 import com.douliao.model.AnchorInfo;
 import com.douliao.model.database.All_live_room;
@@ -22,7 +23,7 @@ import com.douliao.result.ResultView;
 
 public interface NewLiveService {
 	
-	ResultView<List<Map<String, Object>>> showLiveList();
+	ResultView<List<Map<String, Object>>> showLiveList(ShowLiveParam showLiveParam);
 	
 	ResultView<All_live_room> isAudit(CheckAudit checkAudit);
 	

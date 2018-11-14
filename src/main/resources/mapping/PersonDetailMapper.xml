@@ -25,6 +25,12 @@
             #{id}
         </foreach>
 	</select>
+	<select id="selAnchor" parameterType="com.douliao.controller.server.model.SearchUserInfoParam" resultType="com.douliao.model.Anchor">
+		select * from all_live_room where user_id=#{userId} and status=2
+	</select>
+	<select id="selIsLive" parameterType="com.douliao.controller.server.model.SearchUserInfoParam" resultType="com.douliao.model.database.All_live_room_info">
+		select * from all_live_room_info where live_user_id=#{userId} order by start_time desc limit 1
+	</select>
 	<update id="updateUserInfo" parameterType="com.douliao.controller.server.model.UpdatePersonParam">
 		update live_app_user_info
 		<set>

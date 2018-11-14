@@ -65,7 +65,7 @@ public class SchedulerController {
 		      String value=stringRedisTemplate.opsForValue().get(str);
 		      int count=Integer.parseInt(value);
 		      //连续三次没有发送心跳则停止扣费 没有连续三次则累计次数
-		      if(count>=1000) {
+		      if(count>=3) {
 		    	  String[] array=str.split("-");
 		    	  NewLiveService newLiveService=SpringContextUtils.getBean(NewLiveService.class);
 		    	  Map<String, Object> map=new HashMap<String,Object>();

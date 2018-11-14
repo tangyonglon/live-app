@@ -3,6 +3,7 @@ package com.douliao.service.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -64,6 +65,7 @@ public class CheckTokenServiceImpl implements CheckTokenService {
 			
 			String key=String.valueOf(userToken.getUser_id())+"-"+String.valueOf(userToken.getLogin_mode());
 			redisTemplate.opsForHash().putAll(key, map2);
+			redisTemplate.expire(key, 24, TimeUnit.HOURS);
 //			CreateToken.hmsetAll(key,map2);
 			loginTime=userToken.getLogin_time();
 		}else {

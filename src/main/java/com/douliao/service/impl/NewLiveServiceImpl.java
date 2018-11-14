@@ -16,6 +16,7 @@ import com.douliao.controller.server.model.EndLiveParam;
 import com.douliao.controller.server.model.EntryRoomParam;
 import com.douliao.controller.server.model.GiveGiftParam;
 import com.douliao.controller.server.model.LeaveRoomParam;
+import com.douliao.controller.server.model.ShowLiveParam;
 import com.douliao.controller.server.model.SwitchRoomParam;
 import com.douliao.mapper.NewLiveMapper;
 import com.douliao.model.AnchorInfo;
@@ -288,9 +289,9 @@ public class NewLiveServiceImpl implements NewLiveService{
 	}
 
 	@Override
-	public ResultView<List<Map<String, Object>>> showLiveList() {
+	public ResultView<List<Map<String, Object>>> showLiveList(ShowLiveParam showLiveParam) {
 		ResultView<List<Map<String, Object>>> resultView=new ResultView<List<Map<String, Object>>>();
-		List<Map<String, Object>> list=newLiveMapper.showLiveList();
+		List<Map<String, Object>> list=newLiveMapper.showLiveList(showLiveParam);
 		if(list.size()>0) {
 			resultView.setCode(1000);
 			resultView.setMessage("成功");

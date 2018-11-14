@@ -11,7 +11,9 @@ import com.douliao.controller.server.model.MyVideoParam;
 import com.douliao.controller.server.model.PersonTypeParam;
 import com.douliao.controller.server.model.SearchUserInfoParam;
 import com.douliao.controller.server.model.UpdatePersonParam;
+import com.douliao.model.Anchor;
 import com.douliao.model.FindCharacterTypeByUserId;
+import com.douliao.model.database.All_live_room_info;
 import com.douliao.model.database.CharacterType;
 import com.douliao.model.database.Follow;
 import com.douliao.model.database.Hobby;
@@ -36,6 +38,9 @@ public interface PersonDetailMapper {
 	
 	List<CharacterType> selCharacterType(int[] array);
 	
+	Anchor selAnchor(SearchUserInfoParam searchUserInfoParam);
+	
+	All_live_room_info selIsLive(SearchUserInfoParam searchUserInfoParam);
 	
 	int updateUserInfo(UpdatePersonParam updatePersonParam);
 	

@@ -16,7 +16,6 @@ import com.douliao.model.database.Gate;
 import com.douliao.result.ResultView;
 import com.douliao.service.CheckTokenService;
 import com.douliao.service.GateService;
-import com.douliao.util.JwtToken;
 import com.douliao.util.Log4jUtil;
 import com.douliao.util.ReadResourceConfigUtils;
 
@@ -34,6 +33,11 @@ public class GateController {
 	public ResultView<String> openGate(GateParams gateParams,HttpServletRequest request,HttpServletResponse response) {
 		response.reset();
 		ResultView<String> resultView=new ResultView<String>();
+		
+		
+		//添加白名单用户
+		
+		
 		
 		//获取开关 判断是否需要过滤ip
 		String status=new ReadResourceConfigUtils().getRedisConfig("/config/globalConfig.properties", "country_ip_status");
