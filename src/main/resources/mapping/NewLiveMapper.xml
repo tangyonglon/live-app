@@ -104,7 +104,7 @@
 		update all_live_room_chat set end_time=#{end_time},status=#{status} where live_room_id=#{live_room_id}
 	</update>
 	<select id="showLiveList" parameterType="com.douliao.controller.server.model.ShowLiveParam" resultType="map">
-		select laui.user_id,laui.user_name,laui.user_head,laui.fans_number,alr.everyday_img,alr.im_channel,alri.live_room_id,alri.live_room_type,alri.live_price 
+		select laui.user_id,laui.user_name,laui.user_head,laui.fans_number,alr.everyday_img,alr.im_channel,alri.live_room_id,alri.live_room_type,alri.live_price,alri.status
 		from live_app_user_info laui left join all_live_room alr on laui.user_id=alr.user_id left join all_live_room_info alri on laui.user_id=alri.live_user_id 
 		where alri.live_room_type=#{live_room_type} and alri.status!=2 order by laui.fans_number desc limit 10
 	</select>

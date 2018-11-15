@@ -69,6 +69,7 @@ public class SearchServiceImpl implements SearchService {
 				All_live_room_info all_live_room_info=personDetailMapper.selIsLive(searchUserInfoParam);
 				if(all_live_room_info!=null) {
 					anchor.setLive_status(all_live_room_info.getStatus());
+					anchor.setLive_room_type(all_live_room_info.getLive_room_type());
 				}else {
 					//还未直播过时，返回下播中状态
 					anchor.setLive_status(2);

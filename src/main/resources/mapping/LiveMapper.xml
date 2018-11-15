@@ -64,6 +64,21 @@
 <!-- 		</if> -->
 <!-- 		 order by vl.create_time desc limit #{start},#{number} -->
 	</select>
+	<select id="selVideoClips2" parameterType="com.douliao.controller.server.model.VideoClipsParam" resultType="com.douliao.model.VideoClips">
+		SELECT vl.id,vl.user_id as vuser_id,vl.video_description,vl.support,vl.watch_number,vl.price,vl.type,vl.img_url,vl.status,vl.video_level,laui.user_head,laui.user_name 
+	FROM video_list vl left join live_app_user_info laui on vl.user_id=laui.user_id 
+	WHERE vl.type=1 and vl.status=2 
+	<if test="video_tag!=0 and video_tag!=''"> 
+			and video_tag=#{video_tag}
+		</if>
+		<if test="video_level!=null and video_level!=''">
+			and video_level in 
+			<foreach collection="video_level" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		order by vl.create_time desc limit #{start},#{number};
+	</select>
 	<select id="selHotList" parameterType="com.douliao.controller.server.model.VideoClipsParam" resultType="com.douliao.model.HotList">
 		select el.user_id,el.live_url,el.everyday_img,uti.heat,uti.live_price,uti.status,laui.user_head,laui.user_name from everyday_live_list el left join user_tv_info uti on el.user_id=uti.user_id left join live_app_user_info laui on el.user_id=laui.user_id where uti.status not in(2,4) order by laui.fans_number limit #{start},#{number}
 	</select>

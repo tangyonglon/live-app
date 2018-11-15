@@ -39,6 +39,8 @@ public class GateController {
 		
 		
 		
+		
+		
 		//获取开关 判断是否需要过滤ip
 		String status=new ReadResourceConfigUtils().getRedisConfig("/config/globalConfig.properties", "country_ip_status");
 		//status  1标识要过滤 2.标识不需要过滤

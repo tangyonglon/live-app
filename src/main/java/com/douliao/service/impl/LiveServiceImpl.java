@@ -1,6 +1,7 @@
 package com.douliao.service.impl;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,8 +249,14 @@ public class LiveServiceImpl implements LiveService {
 				videoClipsParam.setVideo_level(video_level_filter.getVideo_level().split(","));
 			}
 		}
+		Log4jUtil.info("-------------");
+		List<VideoClips> list=new ArrayList<VideoClips>();
+		if(videoClipsParam.getChannel_id()==0) {
+			list=liveMapper.selVideoClips(videoClipsParam);
+		}else {
+			list=liveMapper.selVideoClips2(videoClipsParam);
+		}
 		
-		List<VideoClips> list=liveMapper.selVideoClips(videoClipsParam);
 		if(list.size()>0) {
 			resultView.setCode(1000);
 			resultView.setMessage("获取成功");

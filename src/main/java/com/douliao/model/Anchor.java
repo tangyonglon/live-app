@@ -17,5 +17,6 @@ public class Anchor {
 	private String im_channel;
 	private int status;
 	private int live_status;
+	private int live_room_type;
 	
 }

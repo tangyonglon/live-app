@@ -50,6 +50,8 @@ public interface LiveMapper {
 	
 	List<VideoClips> selVideoClips(VideoClipsParam videoClipsParam);
 	
+	List<VideoClips> selVideoClips2(VideoClipsParam videoClipsParam);
+	
 	List<HotList> selHotList(VideoClipsParam videoClipsParam);
 	
 	List<NewList> selNewList(VideoClipsParam videoClipsParam);
